@@ -1,5 +1,9 @@
 # Retro-Go 如何实现复古游戏机效果 - 简单解释
 
+> **🎮 在线访问项目展示网站**: [https://fahuwwwwwww.github.io/Gameboy/](https://fahuwwwwwww.github.io/Gameboy/)
+> 
+> 查看完整的项目技术报告、硬件架构设计和模拟器实现原理的交互式展示!
+
 ## 前言
 
 作为一个 ESP32 初学者，你可能会好奇：为什么一个现代的芯片可以运行几十年前的游戏机游戏？这篇文章会用最简单的方式解释 Retro-Go 是如何实现这个"时光倒流"的。
