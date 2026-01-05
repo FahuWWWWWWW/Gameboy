@@ -1,658 +1,658 @@
-<!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fahu Gameboy: 深度工程报告 V3.0</title>
+!DOCTYPE html
+html lang=zh-CN class=scroll-smooth
+head
+    meta charset=UTF-8
+    meta name=viewport content=width=device-width, initial-scale=1.0
+    titleFahu Gameboy 深度工程报告 V3.0title
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    !-- Tailwind CSS --
+    script src=httpscdn.tailwindcss.comscript
     
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    !-- Chart.js --
+    script src=httpscdn.jsdelivr.netnpmchart.jsscript
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    !-- Google Fonts --
+    link href=httpsfonts.googleapis.comcss2family=Noto+Sans+SCwght@300;400;500;700;900&family=JetBrains+Monowght@400;700&family=Press+Start+2P&display=swap rel=stylesheet
 
-    <!-- Icons (Phosphor Icons via CDN) -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    !-- Icons (Phosphor Icons via CDN) --
+    script src=httpsunpkg.com@phosphor-iconswebscript
 
-    <script>
+    script
         tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Noto Sans SC"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                        pixel: ['"Press Start 2P"', 'cursive'],
+            theme {
+                extend {
+                    fontFamily {
+                        sans ['Noto Sans SC', 'sans-serif'],
+                        mono ['JetBrains Mono', 'monospace'],
+                        pixel ['Press Start 2P', 'cursive'],
                     },
-                    colors: {
-                        brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6', // Blue
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            900: '#1e3a8a',
-                            dark: '#0f172a', // Slate 900
+                    colors {
+                        brand {
+                            50 '#eff6ff',
+                            100 '#dbeafe',
+                            500 '#3b82f6',  Blue
+                            600 '#2563eb',
+                            700 '#1d4ed8',
+                            900 '#1e3a8a',
+                            dark '#0f172a',  Slate 900
                         },
-                        stm32: '#002052', // STM32 Deep Blue
-                        esp32: '#E7352C', // Espressif Red (Accent)
-                        pcb: '#064e3b', // PCB Green
+                        stm32 '#002052',  STM32 Deep Blue
+                        esp32 '#E7352C',  Espressif Red (Accent)
+                        pcb '#064e3b',  PCB Green
                     },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'flow': 'flowAnimation 2s linear infinite',
-                        'float': 'float 6s ease-in-out infinite',
+                    animation {
+                        'pulse-slow' 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'flow' 'flowAnimation 2s linear infinite',
+                        'float' 'float 6s ease-in-out infinite',
                     },
-                    keyframes: {
-                        flowAnimation: {
-                            '0%': { backgroundPosition: '0% 50%' },
-                            '100%': { backgroundPosition: '100% 50%' },
+                    keyframes {
+                        flowAnimation {
+                            '0%' { backgroundPosition '0% 50%' },
+                            '100%' { backgroundPosition '100% 50%' },
                         },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
+                        float {
+                            '0%, 100%' { transform 'translateY(0)' },
+                            '50%' { transform 'translateY(-10px)' },
                         }
                     }
                 }
             }
         }
-    </script>
+    script
 
-    <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+    style
+         Custom Scrollbar 
+        -webkit-scrollbar {
+            width 8px;
+            height 8px;
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9; 
+        -webkit-scrollbar-track {
+            background #f1f5f9; 
         }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
+        -webkit-scrollbar-thumb {
+            background #cbd5e1; 
+            border-radius 4px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
+        -webkit-scrollbar-thumbhover {
+            background #94a3b8; 
         }
 
-        /* Syntax Highlighting Simulation */
-        .token-keyword { color: #c678dd; }
-        .token-function { color: #61afef; }
-        .token-string { color: #98c379; }
-        .token-comment { color: #5c6370; font-style: italic; }
-        .token-number { color: #d19a66; }
-        .token-type { color: #e5c07b; }
-        .token-macro { color: #e06c75; }
+         Syntax Highlighting Simulation 
+        .token-keyword { color #c678dd; }
+        .token-function { color #61afef; }
+        .token-string { color #98c379; }
+        .token-comment { color #5c6370; font-style italic; }
+        .token-number { color #d19a66; }
+        .token-type { color #e5c07b; }
+        .token-macro { color #e06c75; }
 
-        /* Tech Grid Background */
+         Tech Grid Background 
         .bg-grid-pattern {
-            background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+            background-image linear-gradient(to right, #e2e8f0 1px, transparent 1px),
                               linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-size 40px 40px;
         }
 
-        /* Active Nav Link Style */
+         Active Nav Link Style 
         .nav-active {
-            background-color: #2563eb !important; /* Brand 600 */
-            color: white !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            background-color #2563eb !important;  Brand 600 
+            color white !important;
+            box-shadow 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
         .nav-active i {
-            color: white !important;
+            color white !important;
         }
 
-        /* Tab Transitions */
+         Tab Transitions 
         .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
+            display none;
+            animation fadeIn 0.3s ease-in-out;
         }
         .tab-content.active {
-            display: block;
+            display block;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity 0; transform translateY(5px); }
+            to { opacity 1; transform translateY(0); }
         }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden selection:bg-brand-200 selection:text-brand-900">
+    style
+head
+body class=bg-slate-50 text-slate-800 h-screen flex overflow-hidden selectionbg-brand-200 selectiontext-brand-900
 
-    <!-- Sidebar Navigation -->
-    <aside class="w-72 bg-brand-dark text-slate-300 flex-shrink-0 flex flex-col shadow-2xl z-20 transition-all duration-300 transform -translate-x-full md:translate-x-0 fixed md:relative h-full" id="sidebar">
-        <!-- Brand -->
-        <div class="p-6 border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-600 rounded-lg flex items-center justify-center text-white text-xl shadow-lg shadow-brand-500/30 animate-float">
-                    <i class="ph-fill ph-game-controller"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-white tracking-wider">FAHU<span class="text-brand-500">BOY</span></h1>
-                    <div class="text-[10px] uppercase tracking-widest text-slate-500">Open Source Project</div>
-                </div>
-            </div>
-        </div>
+    !-- Sidebar Navigation --
+    aside class=w-72 bg-brand-dark text-slate-300 flex-shrink-0 flex flex-col shadow-2xl z-20 transition-all duration-300 transform -translate-x-full mdtranslate-x-0 fixed mdrelative h-full id=sidebar
+        !-- Brand --
+        div class=p-6 border-b border-slate-700 bg-slate-90050 backdrop-blur-sm
+            div class=flex items-center gap-3
+                div class=w-10 h-10 bg-brand-600 rounded-lg flex items-center justify-center text-white text-xl shadow-lg shadow-brand-50030 animate-float
+                    i class=ph-fill ph-game-controlleri
+                div
+                div
+                    h1 class=font-bold text-white tracking-widerFAHUspan class=text-brand-500BOYspanh1
+                    div class=text-[10px] uppercase tracking-widest text-slate-500Open Source Projectdiv
+                div
+            div
+        div
 
-        <!-- Nav Links -->
-        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-2" id="nav-container">
-            <!-- Injected via JS -->
-        </nav>
+        !-- Nav Links --
+        nav class=flex-1 overflow-y-auto py-6 px-3 space-y-2 id=nav-container
+            !-- Injected via JS --
+        nav
 
-        <!-- Footer -->
-        <div class="p-4 border-t border-slate-700 text-xs text-slate-500 text-center">
-            <p>基于 ESP32 & RetroGo</p>
-            <p class="mt-1">© 2024 Fahu OSC</p>
-        </div>
-    </aside>
+        !-- Footer --
+        div class=p-4 border-t border-slate-700 text-xs text-slate-500 text-center
+            p基于 ESP32 & RetroGop
+            p class=mt-1© 2024 Fahu OSCp
+        div
+    aside
 
-    <!-- Mobile Menu Toggle -->
-    <button id="menu-toggle" class="md:hidden fixed top-4 right-4 z-50 bg-brand-600 text-white p-2 rounded-full shadow-lg">
-        <i class="ph ph-list text-xl"></i>
-    </button>
+    !-- Mobile Menu Toggle --
+    button id=menu-toggle class=mdhidden fixed top-4 right-4 z-50 bg-brand-600 text-white p-2 rounded-full shadow-lg
+        i class=ph ph-list text-xli
+    button
 
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto relative bg-grid-pattern scroll-smooth" id="main-scroll">
+    !-- Main Content --
+    main class=flex-1 overflow-y-auto relative bg-grid-pattern scroll-smooth id=main-scroll
         
-        <!-- Hero Header -->
-        <div class="relative bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm/50 backdrop-blur-md bg-white/90">
-            <div class="max-w-6xl mx-auto px-8 py-4">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h2 class="text-2xl font-black text-slate-900 tracking-tight" id="header-title">项目综述</h2>
-                    </div>
-                    <div class="hidden sm:flex gap-4 text-right">
-                        <div class="bg-slate-100 px-3 py-1 rounded text-xs font-mono text-slate-500">
-                            <span class="w-2 h-2 bg-green-500 rounded-full inline-block mr-1"></span>ESP32
-                        </div>
-                        <div class="bg-slate-100 px-3 py-1 rounded text-xs font-mono text-slate-500">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full inline-block mr-1"></span>STM32
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Progress Bar -->
-            <div class="h-1 bg-slate-100 w-full">
-                <div class="h-full bg-brand-600 w-0 transition-all duration-100 ease-out" id="read-progress"></div>
-            </div>
-        </div>
+        !-- Hero Header --
+        div class=relative bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm50 backdrop-blur-md bg-white90
+            div class=max-w-6xl mx-auto px-8 py-4
+                div class=flex justify-between items-center
+                    div
+                        h2 class=text-2xl font-black text-slate-900 tracking-tight id=header-title项目综述h2
+                    div
+                    div class=hidden smflex gap-4 text-right
+                        div class=bg-slate-100 px-3 py-1 rounded text-xs font-mono text-slate-500
+                            span class=w-2 h-2 bg-green-500 rounded-full inline-block mr-1spanESP32
+                        div
+                        div class=bg-slate-100 px-3 py-1 rounded text-xs font-mono text-slate-500
+                            span class=w-2 h-2 bg-blue-500 rounded-full inline-block mr-1spanSTM32
+                        div
+                    div
+                div
+            div
+            !-- Progress Bar --
+            div class=h-1 bg-slate-100 w-full
+                div class=h-full bg-brand-600 w-0 transition-all duration-100 ease-out id=read-progressdiv
+            div
+        div
 
-        <!-- Content Body -->
-        <div class="max-w-6xl mx-auto px-6 py-10 md:px-8 space-y-24 pb-40" id="content-area">
-            <!-- Dynamic Content Injected Here -->
-        </div>
+        !-- Content Body --
+        div class=max-w-6xl mx-auto px-6 py-10 mdpx-8 space-y-24 pb-40 id=content-area
+            !-- Dynamic Content Injected Here --
+        div
 
-    </main>
+    main
 
-    <!-- JavaScript Data & Logic -->
-    <script>
-        // --- Report Data Structure ---
+    !-- JavaScript Data & Logic --
+    script
+         --- Report Data Structure ---
         const reportData = [
             {
-                id: "intro",
-                icon: "ph-book-open-text",
-                title: "1. 绪论与背景",
-                subtitle: "项目背景与技术路线概览",
-                content: `
-                    <!-- 1.1 背景 -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                        <div class="space-y-4">
-                            <h3 class="flex items-center gap-2 text-xl font-bold text-slate-800">
-                                <span class="w-8 h-8 rounded bg-brand-100 text-brand-600 flex items-center justify-center text-sm font-mono">1.1</span>
+                id intro,
+                icon ph-book-open-text,
+                title 1. 绪论与背景,
+                subtitle 项目背景与技术路线概览,
+                content `
+                    !-- 1.1 背景 --
+                    div class=grid grid-cols-1 lggrid-cols-2 gap-8 mb-12
+                        div class=space-y-4
+                            h3 class=flex items-center gap-2 text-xl font-bold text-slate-800
+                                span class=w-8 h-8 rounded bg-brand-100 text-brand-600 flex items-center justify-center text-sm font-mono1.1span
                                 项目背景
-                            </h3>
-                            <p class="text-slate-600 leading-relaxed text-justify">
-                                随着物联网芯片性能的飞跃，利用低成本MCU实现复杂多媒体应用成为可能。本项目<strong>Fahu Gameboy</strong>旨在打破高性能Linux掌机（如RK3326）与低性能单片机掌机之间的壁垒。利用<strong>ESP32</strong>的双核240MHz算力，通过软硬件协同优化，构建一个能流畅运行NES/FC、GB、GBC游戏的开源硬件平台。
-                            </p>
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
-                                <p class="text-sm text-yellow-800">
-                                    <strong>💡 核心意义：</strong> 这是一个从原理图设计到驱动开发的全栈工程案例，重点解决了嵌入式系统中的<strong>音频同步</strong>、<strong>SPI高速DMA传输</strong>以及<strong>多任务实时调度</strong>三大难题。
-                                </p>
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 rounded-xl p-6 text-slate-300 font-mono text-sm relative overflow-hidden shadow-2xl group border border-slate-700">
-                            <div class="absolute top-0 right-0 bg-brand-600 text-white text-[10px] px-2 py-1 rounded-bl shadow">TARGET SPECS</div>
-                            <div class="space-y-4 z-10 relative">
-                                <div class="flex justify-between border-b border-slate-700 pb-2 hover:pl-2 transition-all cursor-default">
-                                    <span>MCU Core</span> <span class="text-brand-400 font-bold">ESP32-WROVER-E</span>
-                                </div>
-                                <div class="flex justify-between border-b border-slate-700 pb-2 hover:pl-2 transition-all cursor-default">
-                                    <span>Memory</span> <span class="text-green-400">520KB SRAM + 4MB PSRAM</span>
-                                </div>
-                                <div class="flex justify-between border-b border-slate-700 pb-2 hover:pl-2 transition-all cursor-default">
-                                    <span>Display</span> <span class="text-purple-400">ILI9341 (320x240 @ 60fps)</span>
-                                </div>
-                                <div class="flex justify-between border-b border-slate-700 pb-2 hover:pl-2 transition-all cursor-default">
-                                    <span>Audio</span> <span class="text-yellow-400">PCM5102 I2S DAC (32-bit)</span>
-                                </div>
-                                <div class="flex justify-between hover:pl-2 transition-all cursor-default">
-                                    <span>System</span> <span class="text-white">FreeRTOS + RetroGo Kernel</span>
-                                </div>
-                            </div>
-                            <!-- Deco Circle -->
-                            <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-brand-500/20 rounded-full blur-2xl group-hover:bg-brand-500/30 transition-all"></div>
-                        </div>
-                    </div>
+                            h3
+                            p class=text-slate-600 leading-relaxed text-justify
+                                随着物联网芯片性能的飞跃，利用低成本MCU实现复杂多媒体应用成为可能。本项目strongFahu Gameboystrong旨在打破高性能Linux掌机（如RK3326）与低性能单片机掌机之间的壁垒。利用strongESP32strong的双核240MHz算力，通过软硬件协同优化，构建一个能流畅运行NESFC、GB、GBC游戏的开源硬件平台。
+                            p
+                            div class=bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg
+                                p class=text-sm text-yellow-800
+                                    strong💡 核心意义：strong 这是一个从原理图设计到驱动开发的全栈工程案例，重点解决了嵌入式系统中的strong音频同步strong、strongSPI高速DMA传输strong以及strong多任务实时调度strong三大难题。
+                                p
+                            div
+                        div
+                        div class=bg-slate-900 rounded-xl p-6 text-slate-300 font-mono text-sm relative overflow-hidden shadow-2xl group border border-slate-700
+                            div class=absolute top-0 right-0 bg-brand-600 text-white text-[10px] px-2 py-1 rounded-bl shadowTARGET SPECSdiv
+                            div class=space-y-4 z-10 relative
+                                div class=flex justify-between border-b border-slate-700 pb-2 hoverpl-2 transition-all cursor-default
+                                    spanMCU Corespan span class=text-brand-400 font-boldESP32-WROVER-Espan
+                                div
+                                div class=flex justify-between border-b border-slate-700 pb-2 hoverpl-2 transition-all cursor-default
+                                    spanMemoryspan span class=text-green-400520KB SRAM + 4MB PSRAMspan
+                                div
+                                div class=flex justify-between border-b border-slate-700 pb-2 hoverpl-2 transition-all cursor-default
+                                    spanDisplayspan span class=text-purple-400ILI9341 (320x240 @ 60fps)span
+                                div
+                                div class=flex justify-between border-b border-slate-700 pb-2 hoverpl-2 transition-all cursor-default
+                                    spanAudiospan span class=text-yellow-400PCM5102 I2S DAC (32-bit)span
+                                div
+                                div class=flex justify-between hoverpl-2 transition-all cursor-default
+                                    spanSystemspan span class=text-whiteFreeRTOS + RetroGo Kernelspan
+                                div
+                            div
+                            !-- Deco Circle --
+                            div class=absolute -bottom-10 -right-10 w-32 h-32 bg-brand-50020 rounded-full blur-2xl group-hoverbg-brand-50030 transition-alldiv
+                        div
+                    div
                 `
             },
             {
-                id: "hardware",
-                icon: "ph-circuitry",
-                title: "2. 硬件架构设计",
-                subtitle: "核心器件选型与PCB设计",
-                content: `
-                    <!-- 2.1 交互式PCB图 -->
-                    <div class="mb-10">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold text-slate-800">2.1 系统硬件拓扑 (点击查看引脚)</h3>
-                        </div>
+                id hardware,
+                icon ph-circuitry,
+                title 2. 硬件架构设计,
+                subtitle 核心器件选型与PCB设计,
+                content `
+                    !-- 2.1 交互式PCB图 --
+                    div class=mb-10
+                        div class=flex justify-between items-center mb-6
+                            h3 class=text-xl font-bold text-slate-8002.1 系统硬件拓扑 (点击查看引脚)h3
+                        div
 
-                        <!-- Interactive Grid Container -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <!-- Left: The Board Visualization -->
-                            <div class="lg:col-span-2 bg-pcb rounded-xl p-6 shadow-2xl relative overflow-hidden border-4 border-slate-800" style="min-height: 420px;">
-                                <!-- Grid Lines -->
-                                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        !-- Interactive Grid Container --
+                        div class=grid grid-cols-1 lggrid-cols-3 gap-6
+                            !-- Left The Board Visualization --
+                            div class=lgcol-span-2 bg-pcb rounded-xl p-6 shadow-2xl relative overflow-hidden border-4 border-slate-800 style=min-height 420px;
+                                !-- Grid Lines --
+                                div class=absolute inset-0 opacity-10 style=background-image radial-gradient(#fff 1px, transparent 1px); background-size 20px 20px;div
                                 
-                                <!-- Traces (Decorations) -->
-                                <div class="absolute top-1/2 left-20 w-32 h-1 bg-yellow-500/40"></div>
-                                <div class="absolute top-1/2 left-52 w-1 h-20 bg-yellow-500/40"></div>
-                                <div class="absolute bottom-12 right-32 w-20 h-1 bg-yellow-500/40"></div>
+                                !-- Traces (Decorations) --
+                                div class=absolute top-12 left-20 w-32 h-1 bg-yellow-50040div
+                                div class=absolute top-12 left-52 w-1 h-20 bg-yellow-50040div
+                                div class=absolute bottom-12 right-32 w-20 h-1 bg-yellow-50040div
                                 
-                                <!-- Components -->
-                                <div class="relative h-full flex flex-col justify-between z-10">
-                                    <!-- Top: Screen & SD -->
-                                    <div class="flex justify-between">
-                                        <div onclick="showPinMap('sd')" class="cursor-pointer bg-slate-300 hover:bg-white w-24 h-20 rounded border-b-4 border-r-2 border-slate-500 flex flex-col items-center justify-center shadow-lg transition-transform hover:-translate-y-1 group">
-                                            <i class="ph-fill ph-sd-card text-2xl text-slate-600 mb-1 group-hover:text-brand-600"></i>
-                                            <span class="text-xs font-bold text-slate-700">SD Card</span>
-                                        </div>
-                                        <div onclick="showPinMap('lcd')" class="cursor-pointer bg-blue-50 hover:bg-white w-48 h-32 rounded border-4 border-slate-700 flex flex-col items-center justify-center shadow-lg transition-transform hover:-translate-y-1 relative overflow-hidden group">
-                                            <div class="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-transparent"></div>
-                                            <span class="text-sm font-bold text-blue-800 z-10">ILI9341 LCD</span>
-                                            <span class="text-[10px] text-blue-600 z-10">320x240 IPS</span>
-                                            <div class="absolute bottom-1 right-1 text-[8px] text-slate-400">SPI MODE</div>
-                                        </div>
-                                    </div>
+                                !-- Components --
+                                div class=relative h-full flex flex-col justify-between z-10
+                                    !-- Top Screen & SD --
+                                    div class=flex justify-between
+                                        div onclick=showPinMap('sd') class=cursor-pointer bg-slate-300 hoverbg-white w-24 h-20 rounded border-b-4 border-r-2 border-slate-500 flex flex-col items-center justify-center shadow-lg transition-transform hover-translate-y-1 group
+                                            i class=ph-fill ph-sd-card text-2xl text-slate-600 mb-1 group-hovertext-brand-600i
+                                            span class=text-xs font-bold text-slate-700SD Cardspan
+                                        div
+                                        div onclick=showPinMap('lcd') class=cursor-pointer bg-blue-50 hoverbg-white w-48 h-32 rounded border-4 border-slate-700 flex flex-col items-center justify-center shadow-lg transition-transform hover-translate-y-1 relative overflow-hidden group
+                                            div class=absolute inset-0 bg-gradient-to-br from-blue-40010 to-transparentdiv
+                                            span class=text-sm font-bold text-blue-800 z-10ILI9341 LCDspan
+                                            span class=text-[10px] text-blue-600 z-10320x240 IPSspan
+                                            div class=absolute bottom-1 right-1 text-[8px] text-slate-400SPI MODEdiv
+                                        div
+                                    div
 
-                                    <!-- Center: ESP32 -->
-                                    <div class="flex justify-center my-4">
-                                        <div onclick="showPinMap('esp')" class="cursor-pointer bg-slate-900 hover:bg-slate-800 w-40 h-40 rounded border-2 border-yellow-500 flex flex-col items-center justify-center shadow-2xl z-10 transition-transform hover:scale-105 group ring-4 ring-yellow-500/20">
-                                            <span class="text-yellow-500 text-4xl mb-2 group-hover:rotate-90 transition-transform duration-500"><i class="ph-fill ph-cpu"></i></span>
-                                            <span class="text-white font-bold font-mono">ESP32</span>
-                                            <span class="text-xs text-slate-400">WROVER-E</span>
-                                        </div>
-                                    </div>
+                                    !-- Center ESP32 --
+                                    div class=flex justify-center my-4
+                                        div onclick=showPinMap('esp') class=cursor-pointer bg-slate-900 hoverbg-slate-800 w-40 h-40 rounded border-2 border-yellow-500 flex flex-col items-center justify-center shadow-2xl z-10 transition-transform hoverscale-105 group ring-4 ring-yellow-50020
+                                            span class=text-yellow-500 text-4xl mb-2 group-hoverrotate-90 transition-transform duration-500i class=ph-fill ph-cpuispan
+                                            span class=text-white font-bold font-monoESP32span
+                                            span class=text-xs text-slate-400WROVER-Espan
+                                        div
+                                    div
 
-                                    <!-- Bottom: Audio & Input -->
-                                    <div class="flex justify-between items-end">
-                                        <div onclick="showPinMap('audio')" class="cursor-pointer bg-purple-100 hover:bg-white w-28 h-16 rounded border-2 border-purple-400 flex flex-col items-center justify-center shadow-lg transition-transform hover:-translate-y-1">
-                                            <div class="flex items-center gap-1">
-                                                <i class="ph-fill ph-speaker-high text-purple-700"></i>
-                                                <span class="text-xs font-bold text-purple-800">PCM5102</span>
-                                            </div>
-                                            <span class="text-[10px] text-purple-600">I2S DAC (Hi-Fi)</span>
-                                        </div>
-                                        <div onclick="showPinMap('input')" class="cursor-pointer bg-gray-200 hover:bg-white w-32 h-14 rounded-full border-b-4 border-gray-400 flex items-center justify-around px-4 shadow-lg transition-transform hover:-translate-y-1">
-                                            <div class="w-6 h-6 bg-slate-800 rounded-full flex items-center justify-center text-white text-[8px]">+</div>
-                                            <div class="w-6 h-6 bg-red-600 rounded-full shadow-inner"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                    !-- Bottom Audio & Input --
+                                    div class=flex justify-between items-end
+                                        div onclick=showPinMap('audio') class=cursor-pointer bg-purple-100 hoverbg-white w-28 h-16 rounded border-2 border-purple-400 flex flex-col items-center justify-center shadow-lg transition-transform hover-translate-y-1
+                                            div class=flex items-center gap-1
+                                                i class=ph-fill ph-speaker-high text-purple-700i
+                                                span class=text-xs font-bold text-purple-800PCM5102span
+                                            div
+                                            span class=text-[10px] text-purple-600I2S DAC (Hi-Fi)span
+                                        div
+                                        div onclick=showPinMap('input') class=cursor-pointer bg-gray-200 hoverbg-white w-32 h-14 rounded-full border-b-4 border-gray-400 flex items-center justify-around px-4 shadow-lg transition-transform hover-translate-y-1
+                                            div class=w-6 h-6 bg-slate-800 rounded-full flex items-center justify-center text-white text-[8px]+div
+                                            div class=w-6 h-6 bg-red-600 rounded-full shadow-innerdiv
+                                        div
+                                    div
+                                div
+                            div
 
-                            <!-- Right: Details Panel -->
-                            <div class="bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col">
-                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2">Component Specs</h4>
-                                <div id="pin-detail-content" class="flex-1 flex flex-col justify-center">
-                                    <div class="text-center text-slate-400 animate-pulse">
-                                        <i class="ph ph-hand-tap text-4xl mb-2"></i>
-                                        <p class="text-sm">点击左侧PCB组件<br>查看详细定义与设计理由</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                            !-- Right Details Panel --
+                            div class=bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col
+                                h4 class=text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 border-b pb-2Component Specsh4
+                                div id=pin-detail-content class=flex-1 flex flex-col justify-center
+                                    div class=text-center text-slate-400 animate-pulse
+                                        i class=ph ph-hand-tap text-4xl mb-2i
+                                        p class=text-sm点击左侧PCB组件br查看详细定义与设计理由p
+                                    div
+                                div
+                            div
+                        div
+                    div
                 `
             },
             {
-                id: "emulator-core",
-                icon: "ph-cpu",
-                title: "3.2 FC模拟器实现原理",
-                subtitle: "双核流水线与DMA加速技术",
-                content: `
-                    <!-- 动态仿真器 -->
-                    <div class="mb-16">
-                        <div class="flex justify-between items-end mb-6">
-                            <div>
-                                <h3 class="text-xl font-bold text-slate-800">3.2.1 模拟器流水线仿真 (Visualized)</h3>
-                                <p class="text-sm text-slate-500">模拟ESP32双核环境下，CPU计算与PPU追赶渲染的异步过程。</p>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="emuStep()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded shadow flex items-center gap-2 transition-colors">
-                                    <i class="ph-bold ph-play"></i> 单步执行
-                                </button>
-                                <button onclick="emuReset()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded shadow transition-colors">
+                id emulator-core,
+                icon ph-cpu,
+                title 3.2 FC模拟器实现原理,
+                subtitle 双核流水线与DMA加速技术,
+                content `
+                    !-- 动态仿真器 --
+                    div class=mb-16
+                        div class=flex justify-between items-end mb-6
+                            div
+                                h3 class=text-xl font-bold text-slate-8003.2.1 模拟器流水线仿真 (Visualized)h3
+                                p class=text-sm text-slate-500模拟ESP32双核环境下，CPU计算与PPU追赶渲染的异步过程。p
+                            div
+                            div class=flex gap-2
+                                button onclick=emuStep() class=bg-brand-600 hoverbg-brand-700 text-white px-4 py-2 rounded shadow flex items-center gap-2 transition-colors
+                                    i class=ph-bold ph-playi 单步执行
+                                button
+                                button onclick=emuReset() class=bg-slate-200 hoverbg-slate-300 text-slate-700 px-4 py-2 rounded shadow transition-colors
                                     重置
-                                </button>
-                            </div>
-                        </div>
+                                button
+                            div
+                        div
 
-                        <!-- 仿真器 UI -->
-                        <div class="bg-slate-800 rounded-xl p-6 border-2 border-slate-700 shadow-xl overflow-hidden relative">
-                            <!-- Background Grid -->
-                            <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                        !-- 仿真器 UI --
+                        div class=bg-slate-800 rounded-xl p-6 border-2 border-slate-700 shadow-xl overflow-hidden relative
+                            !-- Background Grid --
+                            div class=absolute inset-0 opacity-5 bg-[url('httpswww.transparenttextures.compatternscarbon-fibre.png')]div
 
-                            <!-- Dashboard -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 relative z-10">
-                                <!-- CPU Block -->
-                                <div id="sim-cpu" class="bg-slate-700/80 backdrop-blur p-4 rounded border border-slate-600 transition-all duration-300 flex flex-col gap-2">
-                                    <div class="flex justify-between text-xs text-slate-400 font-mono">
-                                        <span><i class="ph-fill ph-cpu"></i> CORE 1 (App)</span>
-                                        <span id="sim-cpu-cycles" class="text-brand-400">Cycles: 0</span>
-                                    </div>
-                                    <div class="h-16 flex items-center justify-center bg-slate-900 rounded font-mono text-green-400 text-xs p-2 border border-slate-600 shadow-inner" id="sim-cpu-op">
+                            !-- Dashboard --
+                            div class=grid grid-cols-1 mdgrid-cols-3 gap-6 mb-6 relative z-10
+                                !-- CPU Block --
+                                div id=sim-cpu class=bg-slate-70080 backdrop-blur p-4 rounded border border-slate-600 transition-all duration-300 flex flex-col gap-2
+                                    div class=flex justify-between text-xs text-slate-400 font-mono
+                                        spani class=ph-fill ph-cpui CORE 1 (App)span
+                                        span id=sim-cpu-cycles class=text-brand-400Cycles 0span
+                                    div
+                                    div class=h-16 flex items-center justify-center bg-slate-900 rounded font-mono text-green-400 text-xs p-2 border border-slate-600 shadow-inner id=sim-cpu-op
                                         IDLE
-                                    </div>
-                                    <div class="text-[10px] text-slate-500 text-center">MOS 6502 Emulator</div>
-                                </div>
+                                    div
+                                    div class=text-[10px] text-slate-500 text-centerMOS 6502 Emulatordiv
+                                div
 
-                                <!-- PPU Block -->
-                                <div id="sim-ppu" class="bg-slate-700/80 backdrop-blur p-4 rounded border border-slate-600 transition-all duration-300 opacity-50 flex flex-col gap-2">
-                                    <div class="flex justify-between text-xs text-slate-400 font-mono">
-                                        <span><i class="ph-fill ph-image"></i> PPU (Graphics)</span>
-                                        <span id="sim-scanline" class="text-purple-400">Line: 0/16</span>
-                                    </div>
-                                    <!-- Visualizing Scanline Buffer -->
-                                    <div class="h-16 bg-slate-900 rounded relative overflow-hidden border border-slate-600 shadow-inner">
-                                        <div id="sim-ppu-bar" class="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-purple-600 to-purple-400 w-0 transition-all duration-100"></div>
-                                        <div class="absolute inset-0 flex items-center justify-center text-[10px] text-purple-200 font-mono">
+                                !-- PPU Block --
+                                div id=sim-ppu class=bg-slate-70080 backdrop-blur p-4 rounded border border-slate-600 transition-all duration-300 opacity-50 flex flex-col gap-2
+                                    div class=flex justify-between text-xs text-slate-400 font-mono
+                                        spani class=ph-fill ph-imagei PPU (Graphics)span
+                                        span id=sim-scanline class=text-purple-400Line 016span
+                                    div
+                                    !-- Visualizing Scanline Buffer --
+                                    div class=h-16 bg-slate-900 rounded relative overflow-hidden border border-slate-600 shadow-inner
+                                        div id=sim-ppu-bar class=absolute top-0 bottom-0 left-0 bg-gradient-to-r from-purple-600 to-purple-400 w-0 transition-all duration-100div
+                                        div class=absolute inset-0 flex items-center justify-center text-[10px] text-purple-200 font-mono
                                             Line Buffer (320px)
-                                        </div>
-                                    </div>
-                                    <div class="text-[10px] text-slate-500 text-center">Scanline Renderer</div>
-                                </div>
+                                        div
+                                    div
+                                    div class=text-[10px] text-slate-500 text-centerScanline Rendererdiv
+                                div
 
-                                <!-- DMA Block -->
-                                <div id="sim-dma" class="bg-slate-700/80 backdrop-blur p-4 rounded border border-slate-600 transition-all duration-300 opacity-50 flex flex-col gap-2">
-                                    <div class="flex justify-between text-xs text-slate-400 font-mono">
-                                        <span><i class="ph-fill ph-arrows-left-right"></i> DMA Controller</span>
-                                        <span id="sim-dma-status" class="text-blue-400">IDLE</span>
-                                    </div>
-                                    <div class="h-16 flex items-center justify-center flex-col gap-1">
-                                        <div class="w-full h-2 bg-slate-600 rounded-full overflow-hidden">
-                                            <div id="sim-dma-flow" class="h-full bg-blue-500 w-0 shadow-[0_0_10px_#3b82f6]"></div>
-                                        </div>
-                                        <span class="text-[9px] text-slate-400">SPI FIFO Queue</span>
-                                    </div>
-                                    <div class="text-[10px] text-slate-500 text-center">Background Transfer</div>
-                                </div>
-                            </div>
+                                !-- DMA Block --
+                                div id=sim-dma class=bg-slate-70080 backdrop-blur p-4 rounded border border-slate-600 transition-all duration-300 opacity-50 flex flex-col gap-2
+                                    div class=flex justify-between text-xs text-slate-400 font-mono
+                                        spani class=ph-fill ph-arrows-left-righti DMA Controllerspan
+                                        span id=sim-dma-status class=text-blue-400IDLEspan
+                                    div
+                                    div class=h-16 flex items-center justify-center flex-col gap-1
+                                        div class=w-full h-2 bg-slate-600 rounded-full overflow-hidden
+                                            div id=sim-dma-flow class=h-full bg-blue-500 w-0 shadow-[0_0_10px_#3b82f6]div
+                                        div
+                                        span class=text-[9px] text-slate-400SPI FIFO Queuespan
+                                    div
+                                    div class=text-[10px] text-slate-500 text-centerBackground Transferdiv
+                                div
+                            div
 
-                            <!-- Log Console -->
-                            <div class="font-mono text-xs h-32 overflow-y-auto bg-black/50 p-3 rounded text-slate-300 border border-slate-700 shadow-inner" id="sim-console">
-                                <span class="text-green-500">[SYSTEM]</span> Emulator Ready. Press "单步执行" to start pipeline.<br>
-                            </div>
-                        </div>
-                    </div>
+                            !-- Log Console --
+                            div class=font-mono text-xs h-32 overflow-y-auto bg-black50 p-3 rounded text-slate-300 border border-slate-700 shadow-inner id=sim-console
+                                span class=text-green-500[SYSTEM]span Emulator Ready. Press 单步执行 to start pipeline.br
+                            div
+                        div
+                    div
                 `
             },
             {
-                id: "deployment",
-                icon: "ph-rocket-launch",
-                title: "3.3 多平台部署与避坑指南",
-                subtitle: "ESP32 vs STM32 部署流程详解",
-                content: `
-                    <!-- 平台切换 Tabs -->
-                    <div class="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden mb-12">
-                        <div class="flex border-b border-slate-200 bg-slate-50">
-                            <button onclick="switchDeployTab('esp32')" id="tab-btn-esp32" class="flex-1 py-4 text-sm font-bold text-brand-600 border-b-2 border-brand-600 bg-white transition-colors flex justify-center items-center gap-2">
-                                <i class="ph-fill ph-cpu"></i> ESP32 部署流程
-                            </button>
-                            <button onclick="switchDeployTab('stm32')" id="tab-btn-stm32" class="flex-1 py-4 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors flex justify-center items-center gap-2">
-                                <i class="ph-fill ph-microchip"></i> STM32 移植要点
-                            </button>
-                        </div>
+                id deployment,
+                icon ph-rocket-launch,
+                title 3.3 多平台部署与避坑指南,
+                subtitle ESP32 vs STM32 部署流程详解,
+                content `
+                    !-- 平台切换 Tabs --
+                    div class=bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden mb-12
+                        div class=flex border-b border-slate-200 bg-slate-50
+                            button onclick=switchDeployTab('esp32') id=tab-btn-esp32 class=flex-1 py-4 text-sm font-bold text-brand-600 border-b-2 border-brand-600 bg-white transition-colors flex justify-center items-center gap-2
+                                i class=ph-fill ph-cpui ESP32 部署流程
+                            button
+                            button onclick=switchDeployTab('stm32') id=tab-btn-stm32 class=flex-1 py-4 text-sm font-bold text-slate-500 hovertext-slate-700 transition-colors flex justify-center items-center gap-2
+                                i class=ph-fill ph-microchipi STM32 移植要点
+                            button
+                        div
 
-                        <!-- ESP32 Content -->
-                        <div id="content-esp32" class="tab-content active p-8">
-                            <h4 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                <span class="bg-brand-100 text-brand-700 px-2 py-1 rounded text-xs">Recommended</span>
-                                基于 ESP-IDF / RetroGo 的部署
-                            </h4>
-                            <ol class="space-y-6 relative border-l-2 border-slate-200 ml-3">
-                                <li class="pl-8 relative">
-                                    <span class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand-500 border-2 border-white"></span>
-                                    <h5 class="font-bold text-slate-700">1. Menuconfig 核心配置</h5>
-                                    <p class="text-sm text-slate-600 mt-1 mb-2">必须开启PSRAM并配置时钟频率以最大化性能。</p>
-                                    <div class="bg-slate-800 text-slate-300 p-3 rounded text-xs font-mono border border-slate-700">
-                                        idf.py menuconfig<br>
-                                        > Component config > ESP32-specific > <span class="text-green-400">CPU freq: 240 MHz</span><br>
-                                        > Component config > ESP32-specific > <span class="text-green-400">Support for external RAM: Enable</span><br>
-                                        > Compiler options > Optimization Level > <span class="text-yellow-400">Optimize for performance (-O2)</span>
-                                    </div>
-                                </li>
-                                <li class="pl-8 relative">
-                                    <span class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-400 border-2 border-white"></span>
-                                    <h5 class="font-bold text-slate-700">2. 自定义分区表 (partitions.csv)</h5>
-                                    <p class="text-sm text-slate-600 mt-1 mb-2">默认分区表无法容纳RetroGo固件，需手动划分。</p>
-                                    <div class="bg-slate-50 p-3 rounded text-xs font-mono border border-slate-200 text-slate-600">
-                                        # Name,   Type, SubType, Offset,  Size, Flags<br>
-                                        nvs,      data, nvs,     ,        0x4000,<br>
-                                        factory,  app,  factory, ,        <span class="text-red-500 font-bold">3M</span>,<br>
-                                        vfs,      data, fat,     ,        <span class="text-blue-500 font-bold">remaining</span>,
-                                    </div>
-                                </li>
-                                <li class="pl-8 relative">
-                                    <span class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-400 border-2 border-white"></span>
-                                    <h5 class="font-bold text-slate-700">3. IRAM 内存优化 (Code)</h5>
-                                    <p class="text-sm text-slate-600 mt-1">
+                        !-- ESP32 Content --
+                        div id=content-esp32 class=tab-content active p-8
+                            h4 class=text-lg font-bold text-slate-800 mb-4 flex items-center gap-2
+                                span class=bg-brand-100 text-brand-700 px-2 py-1 rounded text-xsRecommendedspan
+                                基于 ESP-IDF  RetroGo 的部署
+                            h4
+                            ol class=space-y-6 relative border-l-2 border-slate-200 ml-3
+                                li class=pl-8 relative
+                                    span class=absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand-500 border-2 border-whitespan
+                                    h5 class=font-bold text-slate-7001. Menuconfig 核心配置h5
+                                    p class=text-sm text-slate-600 mt-1 mb-2必须开启PSRAM并配置时钟频率以最大化性能。p
+                                    div class=bg-slate-800 text-slate-300 p-3 rounded text-xs font-mono border border-slate-700
+                                        idf.py menuconfigbr
+                                         Component config  ESP32-specific  span class=text-green-400CPU freq 240 MHzspanbr
+                                         Component config  ESP32-specific  span class=text-green-400Support for external RAM Enablespanbr
+                                         Compiler options  Optimization Level  span class=text-yellow-400Optimize for performance (-O2)span
+                                    div
+                                li
+                                li class=pl-8 relative
+                                    span class=absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-400 border-2 border-whitespan
+                                    h5 class=font-bold text-slate-7002. 自定义分区表 (partitions.csv)h5
+                                    p class=text-sm text-slate-600 mt-1 mb-2默认分区表无法容纳RetroGo固件，需手动划分。p
+                                    div class=bg-slate-50 p-3 rounded text-xs font-mono border border-slate-200 text-slate-600
+                                        # Name,   Type, SubType, Offset,  Size, Flagsbr
+                                        nvs,      data, nvs,     ,        0x4000,br
+                                        factory,  app,  factory, ,        span class=text-red-500 font-bold3Mspan,br
+                                        vfs,      data, fat,     ,        span class=text-blue-500 font-boldremainingspan,
+                                    div
+                                li
+                                li class=pl-8 relative
+                                    span class=absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-400 border-2 border-whitespan
+                                    h5 class=font-bold text-slate-7003. IRAM 内存优化 (Code)h5
+                                    p class=text-sm text-slate-600 mt-1
                                         将热点函数（Hot Path）放入内部SRAM执行，避免SPI Flash缓存未命中导致的卡顿。
-                                    </p>
-                                    <div class="mt-2 bg-slate-100 p-2 rounded font-mono text-xs text-brand-700 inline-block">
-                                        void <span class="font-bold">IRAM_ATTR</span> ppu_render_line() { ... }
-                                    </div>
-                                </li>
-                            </ol>
-                        </div>
+                                    p
+                                    div class=mt-2 bg-slate-100 p-2 rounded font-mono text-xs text-brand-700 inline-block
+                                        void span class=font-boldIRAM_ATTRspan ppu_render_line() { ... }
+                                    div
+                                li
+                            ol
+                        div
 
-                        <!-- STM32 Content -->
-                        <div id="content-stm32" class="tab-content p-8 bg-slate-50/50">
-                            <h4 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                <span class="bg-slate-200 text-slate-700 px-2 py-1 rounded text-xs">Advanced</span>
-                                基于 STM32 (F4/H7) 的移植差异
-                            </h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <div class="bg-white p-4 rounded border border-slate-200">
-                                    <h5 class="font-bold text-red-600 text-sm mb-2"><i class="ph-bold ph-warning"></i> 性能瓶颈</h5>
-                                    <p class="text-xs text-slate-600">STM32F103 (72MHz) 无法运行NES模拟器。至少需要 <strong>STM32F407 (168MHz)</strong> 或更强型号。</p>
-                                </div>
-                                <div class="bg-white p-4 rounded border border-slate-200">
-                                    <h5 class="font-bold text-blue-600 text-sm mb-2"><i class="ph-bold ph-arrows-left-right"></i> SPI 处理差异</h5>
-                                    <p class="text-xs text-slate-600">STM32 HAL库效率较低，建议直接使用 <strong>LL库</strong> 或操作寄存器配置DMA。</p>
-                                </div>
-                            </div>
-                            <ol class="space-y-4 text-sm text-slate-700 list-decimal list-inside">
-                                <li>
-                                    <strong>FatFS 集成：</strong> STM32通常没有原生的VFS支持，需要手动移植 FatFS 库并对接 SDIO 驱动。
-                                </li>
-                                <li>
-                                    <strong>超频 (Overclocking)：</strong> 为了跑满60FPS，常需将系统时钟超频。例如F407从168MHz超至240MHz（需注意散热）。
-                                </li>
-                                <li>
-                                    <strong>无 OS 裸机运行：</strong> STM32上通常不运行FreeRTOS以节省开销，采用简单的 <code>while(1) { emu_loop(); }</code> 结构。
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
+                        !-- STM32 Content --
+                        div id=content-stm32 class=tab-content p-8 bg-slate-5050
+                            h4 class=text-lg font-bold text-slate-800 mb-4 flex items-center gap-2
+                                span class=bg-slate-200 text-slate-700 px-2 py-1 rounded text-xsAdvancedspan
+                                基于 STM32 (F4H7) 的移植差异
+                            h4
+                            div class=grid grid-cols-1 mdgrid-cols-2 gap-6 mb-6
+                                div class=bg-white p-4 rounded border border-slate-200
+                                    h5 class=font-bold text-red-600 text-sm mb-2i class=ph-bold ph-warningi 性能瓶颈h5
+                                    p class=text-xs text-slate-600STM32F103 (72MHz) 无法运行NES模拟器。至少需要 strongSTM32F407 (168MHz)strong 或更强型号。p
+                                div
+                                div class=bg-white p-4 rounded border border-slate-200
+                                    h5 class=font-bold text-blue-600 text-sm mb-2i class=ph-bold ph-arrows-left-righti SPI 处理差异h5
+                                    p class=text-xs text-slate-600STM32 HAL库效率较低，建议直接使用 strongLL库strong 或操作寄存器配置DMA。p
+                                div
+                            div
+                            ol class=space-y-4 text-sm text-slate-700 list-decimal list-inside
+                                li
+                                    strongFatFS 集成：strong STM32通常没有原生的VFS支持，需要手动移植 FatFS 库并对接 SDIO 驱动。
+                                li
+                                li
+                                    strong超频 (Overclocking)：strong 为了跑满60FPS，常需将系统时钟超频。例如F407从168MHz超至240MHz（需注意散热）。
+                                li
+                                li
+                                    strong无 OS 裸机运行：strong STM32上通常不运行FreeRTOS以节省开销，采用简单的 codewhile(1) { emu_loop(); }code 结构。
+                                li
+                            ol
+                        div
+                    div
 
-                    <!-- 避坑指南卡片 -->
-                    <h3 class="text-xl font-bold text-slate-800 mb-6">⚠️ 工程实战避坑指南 (Attention Points)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Card 1 -->
-                        <div class="bg-red-50 rounded-xl p-5 border border-red-100 hover:shadow-md transition-shadow">
-                            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center mb-3">
-                                <i class="ph-fill ph-lightning text-xl"></i>
-                            </div>
-                            <h4 class="font-bold text-slate-800 mb-2">电源纹波干扰</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                <strong>现象：</strong> 屏幕有水波纹，音频有滋滋声。<br>
-                                <strong>对策：</strong> 在LDO输出端并联 100uF 钽电容。PCB走线时，模拟地(AGND)与数字地(DGND)单点接地。
-                            </p>
-                        </div>
-                        <!-- Card 2 -->
-                        <div class="bg-yellow-50 rounded-xl p-5 border border-yellow-100 hover:shadow-md transition-shadow">
-                            <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center mb-3">
-                                <i class="ph-fill ph-wifi-high text-xl"></i>
-                            </div>
-                            <h4 class="font-bold text-slate-800 mb-2">Wi-Fi / ADC 冲突</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                <strong>现象：</strong> 开启Wi-Fi后，按键ADC读取值乱跳。<br>
-                                <strong>对策：</strong> ESP32的ADC2通道与Wi-Fi共用。必须将按键连接到 <strong>ADC1</strong> (GPIO 32-39) 引脚。
-                            </p>
-                        </div>
-                        <!-- Card 3 -->
-                        <div class="bg-blue-50 rounded-xl p-5 border border-blue-100 hover:shadow-md transition-shadow">
-                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-3">
-                                <i class="ph-fill ph-wave-sine text-xl"></i>
-                            </div>
-                            <h4 class="font-bold text-slate-800 mb-2">SPI 信号完整性</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                <strong>现象：</strong> 屏幕花屏或全白，SD卡读取失败。<br>
-                                <strong>对策：</strong> SPI时钟线(SCK)超过40MHz时，导线长度不能超过5cm。PCB上SCK线需包地处理。
-                            </p>
-                        </div>
-                    </div>
+                    !-- 避坑指南卡片 --
+                    h3 class=text-xl font-bold text-slate-800 mb-6⚠️ 工程实战避坑指南 (Attention Points)h3
+                    div class=grid grid-cols-1 mdgrid-cols-3 gap-6
+                        !-- Card 1 --
+                        div class=bg-red-50 rounded-xl p-5 border border-red-100 hovershadow-md transition-shadow
+                            div class=w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center mb-3
+                                i class=ph-fill ph-lightning text-xli
+                            div
+                            h4 class=font-bold text-slate-800 mb-2电源纹波干扰h4
+                            p class=text-xs text-slate-600 leading-relaxed
+                                strong现象：strong 屏幕有水波纹，音频有滋滋声。br
+                                strong对策：strong 在LDO输出端并联 100uF 钽电容。PCB走线时，模拟地(AGND)与数字地(DGND)单点接地。
+                            p
+                        div
+                        !-- Card 2 --
+                        div class=bg-yellow-50 rounded-xl p-5 border border-yellow-100 hovershadow-md transition-shadow
+                            div class=w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center mb-3
+                                i class=ph-fill ph-wifi-high text-xli
+                            div
+                            h4 class=font-bold text-slate-800 mb-2Wi-Fi  ADC 冲突h4
+                            p class=text-xs text-slate-600 leading-relaxed
+                                strong现象：strong 开启Wi-Fi后，按键ADC读取值乱跳。br
+                                strong对策：strong ESP32的ADC2通道与Wi-Fi共用。必须将按键连接到 strongADC1strong (GPIO 32-39) 引脚。
+                            p
+                        div
+                        !-- Card 3 --
+                        div class=bg-blue-50 rounded-xl p-5 border border-blue-100 hovershadow-md transition-shadow
+                            div class=w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-3
+                                i class=ph-fill ph-wave-sine text-xli
+                            div
+                            h4 class=font-bold text-slate-800 mb-2SPI 信号完整性h4
+                            p class=text-xs text-slate-600 leading-relaxed
+                                strong现象：strong 屏幕花屏或全白，SD卡读取失败。br
+                                strong对策：strong SPI时钟线(SCK)超过40MHz时，导线长度不能超过5cm。PCB上SCK线需包地处理。
+                            p
+                        div
+                    div
                 `
             }
         ];
 
-        // --- Hardware Data ---
+         --- Hardware Data ---
         const pinDetails = {
-            'esp': {
-                title: 'ESP32-WROVER-E',
-                desc: '核心大脑 (The Brain)',
-                specs: ['Dual-Core 240MHz', '4MB Flash', '8MB PSRAM (必需)', 'Wi-Fi/BT 4.2'],
-                reason: 'PSRAM是运行NES模拟器的硬性要求，SRAM (520KB) 不足以容纳整个PPU帧缓存和ROM数据。'
+            'esp' {
+                title 'ESP32-WROVER-E',
+                desc '核心大脑 (The Brain)',
+                specs ['Dual-Core 240MHz', '4MB Flash', '8MB PSRAM (必需)', 'Wi-FiBT 4.2'],
+                reason 'PSRAM是运行NES模拟器的硬性要求，SRAM (520KB) 不足以容纳整个PPU帧缓存和ROM数据。'
             },
-            'lcd': {
-                title: 'ILI9341 LCD',
-                desc: '显示输出 (Visual)',
-                specs: ['SPI Interface (VSPI)', 'CS: GPIO 5', 'DC: GPIO 21', 'CLK: 60MHz (Overclocked)'],
-                reason: '使用VSPI硬件通道，配合DMA双缓冲技术，在SPI串行总线上实现了并口屏的刷新率。'
+            'lcd' {
+                title 'ILI9341 LCD',
+                desc '显示输出 (Visual)',
+                specs ['SPI Interface (VSPI)', 'CS GPIO 5', 'DC GPIO 21', 'CLK 60MHz (Overclocked)'],
+                reason '使用VSPI硬件通道，配合DMA双缓冲技术，在SPI串行总线上实现了并口屏的刷新率。'
             },
-            'audio': {
-                title: 'PCM5102 DAC',
-                desc: '音频输出 (Sound)',
-                specs: ['I2S Interface', 'BCK: GPIO 26', 'DATA: GPIO 22', '32-bit/384kHz'],
-                reason: '硬件I2S直接DMA传输，不占用CPU周期。相比PWM，提供了Hi-Fi级的信噪比，无底噪。'
+            'audio' {
+                title 'PCM5102 DAC',
+                desc '音频输出 (Sound)',
+                specs ['I2S Interface', 'BCK GPIO 26', 'DATA GPIO 22', '32-bit384kHz'],
+                reason '硬件I2S直接DMA传输，不占用CPU周期。相比PWM，提供了Hi-Fi级的信噪比，无底噪。'
             },
-            'sd': {
-                title: 'MicroSD Card',
-                desc: '数据存储 (Storage)',
-                specs: ['SPI Mode', 'CS: GPIO 13', 'Max Speed: 20MHz'],
-                reason: '用于存放 .nes 游戏文件、模拟器存档以及封面图片。与屏幕共享SPI总线。'
+            'sd' {
+                title 'MicroSD Card',
+                desc '数据存储 (Storage)',
+                specs ['SPI Mode', 'CS GPIO 13', 'Max Speed 20MHz'],
+                reason '用于存放 .nes 游戏文件、模拟器存档以及封面图片。与屏幕共享SPI总线。'
             },
-            'input': {
-                title: 'Input Controls',
-                desc: '交互输入 (Input)',
-                specs: ['D-Pad + ABXY', 'GPIO Direct Scan', 'Software Debounce: 5ms'],
-                reason: '直接GPIO扫描响应最快（<1ms）。未使用I2C扩展芯片以避免总线延迟。'
+            'input' {
+                title 'Input Controls',
+                desc '交互输入 (Input)',
+                specs ['D-Pad + ABXY', 'GPIO Direct Scan', 'Software Debounce 5ms'],
+                reason '直接GPIO扫描响应最快（1ms）。未使用I2C扩展芯片以避免总线延迟。'
             }
         };
 
-        // --- Helper Functions ---
+         --- Helper Functions ---
 
-        // Render Nav
+         Render Nav
         function renderNav() {
             const container = document.getElementById('nav-container');
-            container.innerHTML = reportData.map((section, idx) => `
-                <a href="#section-${idx}" id="nav-link-${idx}" onclick="scrollToSection(${idx}); return false;" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400 group border-l-4 border-transparent">
-                    <i class="${section.icon} text-lg group-hover:text-brand-500 transition-colors"></i>
-                    <span>${section.title.split(' ')[1] || section.title}</span> 
-                </a>
+            container.innerHTML = reportData.map((section, idx) = `
+                a href=#section-${idx} id=nav-link-${idx} onclick=scrollToSection(${idx}); return false; 
+                   class=flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all hoverbg-slate-800 hovertext-white text-slate-400 group border-l-4 border-transparent
+                    i class=${section.icon} text-lg group-hovertext-brand-500 transition-colorsi
+                    span${section.title.split(' ')[1]  section.title}span 
+                a
             `).join('');
         }
 
-        // Render Content
+         Render Content
         function renderContent() {
             const container = document.getElementById('content-area');
-            container.innerHTML = reportData.map((section, idx) => `
-                <section id="section-${idx}" class="scroll-mt-32 opacity-0 translate-y-8 transition-all duration-700 ease-out">
-                    <div class="mb-8 border-b border-slate-200 pb-4">
-                        <div class="flex items-center gap-3 mb-2">
-                             <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 text-xl shadow-sm">
-                                <i class="${section.icon}"></i>
-                             </div>
-                             <h2 class="text-3xl font-bold text-slate-800">${section.title}</h2>
-                        </div>
-                        <p class="text-slate-500 ml-14">${section.subtitle}</p>
-                    </div>
-                    <div class="prose prose-slate max-w-none text-slate-600">
+            container.innerHTML = reportData.map((section, idx) = `
+                section id=section-${idx} class=scroll-mt-32 opacity-0 translate-y-8 transition-all duration-700 ease-out
+                    div class=mb-8 border-b border-slate-200 pb-4
+                        div class=flex items-center gap-3 mb-2
+                             div class=w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 text-xl shadow-sm
+                                i class=${section.icon}i
+                             div
+                             h2 class=text-3xl font-bold text-slate-800${section.title}h2
+                        div
+                        p class=text-slate-500 ml-14${section.subtitle}p
+                    div
+                    div class=prose prose-slate max-w-none text-slate-600
                         ${section.content}
-                    </div>
-                </section>
+                    div
+                section
             `).join('');
             
-            // Animation Trigger
-            setTimeout(() => {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
+             Animation Trigger
+            setTimeout(() = {
+                const observer = new IntersectionObserver((entries) = {
+                    entries.forEach(entry = {
                         if (entry.isIntersecting) {
                             entry.target.classList.remove('opacity-0', 'translate-y-8');
                             entry.target.classList.add('opacity-100', 'translate-y-0');
                         }
                     });
-                }, { threshold: 0.1 });
-                document.querySelectorAll('section').forEach(sec => observer.observe(sec));
+                }, { threshold 0.1 });
+                document.querySelectorAll('section').forEach(sec = observer.observe(sec));
             }, 100);
         }
 
-        // Deployment Tab Switcher
+         Deployment Tab Switcher
         window.switchDeployTab = function(platform) {
-            // Reset Buttons
-            document.getElementById('tab-btn-esp32').className = "flex-1 py-4 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors flex justify-center items-center gap-2 border-b-2 border-transparent bg-slate-50";
-            document.getElementById('tab-btn-stm32').className = "flex-1 py-4 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors flex justify-center items-center gap-2 border-b-2 border-transparent bg-slate-50";
+             Reset Buttons
+            document.getElementById('tab-btn-esp32').className = flex-1 py-4 text-sm font-bold text-slate-500 hovertext-slate-700 transition-colors flex justify-center items-center gap-2 border-b-2 border-transparent bg-slate-50;
+            document.getElementById('tab-btn-stm32').className = flex-1 py-4 text-sm font-bold text-slate-500 hovertext-slate-700 transition-colors flex justify-center items-center gap-2 border-b-2 border-transparent bg-slate-50;
             
-            // Activate Button
-            const activeBtnClass = "flex-1 py-4 text-sm font-bold text-brand-600 border-b-2 border-brand-600 bg-white transition-colors flex justify-center items-center gap-2";
+             Activate Button
+            const activeBtnClass = flex-1 py-4 text-sm font-bold text-brand-600 border-b-2 border-brand-600 bg-white transition-colors flex justify-center items-center gap-2;
             document.getElementById(`tab-btn-${platform}`).className = activeBtnClass;
 
-            // Content Switch
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+             Content Switch
+            document.querySelectorAll('.tab-content').forEach(el = el.classList.remove('active'));
             document.getElementById(`content-${platform}`).classList.add('active');
         };
 
-        // Pin Map Visualizer
+         Pin Map Visualizer
         window.showPinMap = function(id) {
             const data = pinDetails[id];
             const panel = document.getElementById('pin-detail-content');
             
             panel.innerHTML = `
-                <div class="animate-fadeIn">
-                    <div class="flex items-center justify-between mb-4">
-                        <h5 class="text-lg font-bold text-brand-700">${data.title}</h5>
-                        <i class="ph-fill ph-check-circle text-green-500 text-xl"></i>
-                    </div>
-                    <p class="text-xs text-slate-500 mb-6 italic border-l-2 border-slate-300 pl-3">${data.desc}</p>
+                div class=animate-fadeIn
+                    div class=flex items-center justify-between mb-4
+                        h5 class=text-lg font-bold text-brand-700${data.title}h5
+                        i class=ph-fill ph-check-circle text-green-500 text-xli
+                    div
+                    p class=text-xs text-slate-500 mb-6 italic border-l-2 border-slate-300 pl-3${data.desc}p
                     
-                    <div class="bg-slate-50 rounded p-4 mb-4 border border-slate-200 shadow-sm">
-                        <h6 class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">Pin Configuration</h6>
-                        <ul class="text-xs font-mono space-y-2 text-slate-700">
-                            ${data.specs.map(s => `<li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-500 rounded-full"></div>${s}</li>`).join('')}
-                        </ul>
-                    </div>
+                    div class=bg-slate-50 rounded p-4 mb-4 border border-slate-200 shadow-sm
+                        h6 class=text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-widerPin Configurationh6
+                        ul class=text-xs font-mono space-y-2 text-slate-700
+                            ${data.specs.map(s = `li class=flex items-center gap-2div class=w-1.5 h-1.5 bg-brand-500 rounded-fulldiv${s}li`).join('')}
+                        ul
+                    div
 
-                    <div class="bg-yellow-50 rounded p-4 border border-yellow-100">
-                         <h6 class="text-[10px] font-bold text-yellow-600 mb-2 uppercase tracking-wider">Why this choice?</h6>
-                         <p class="text-xs text-yellow-800 leading-relaxed font-medium">${data.reason}</p>
-                    </div>
-                </div>
+                    div class=bg-yellow-50 rounded p-4 border border-yellow-100
+                         h6 class=text-[10px] font-bold text-yellow-600 mb-2 uppercase tracking-widerWhy this choiceh6
+                         p class=text-xs text-yellow-800 leading-relaxed font-medium${data.reason}p
+                    div
+                div
             `;
         };
 
-        // Emulator Simulation (Same logic as V2 but refined visuals)
+         Emulator Simulation (Same logic as V2 but refined visuals)
         let emuState = 0; 
         let scanlines = 0;
 
@@ -662,63 +662,63 @@
             const dma = document.getElementById('sim-dma');
             const consoleDiv = document.getElementById('sim-console');
             
-            // Helper to reset visuals
-            [cpu, ppu, dma].forEach(el => {
+             Helper to reset visuals
+            [cpu, ppu, dma].forEach(el = {
                 el.classList.remove('ring-2', 'ring-green-400', 'ring-purple-400', 'ring-blue-400', 'bg-slate-800');
-                el.classList.add('opacity-50', 'bg-slate-700/80');
+                el.classList.add('opacity-50', 'bg-slate-70080');
             });
 
-            if (emuState === 0 || emuState === 4) {
-                // CPU
+            if (emuState === 0  emuState === 4) {
+                 CPU
                 emuState = 1;
-                cpu.classList.remove('opacity-50', 'bg-slate-700/80');
+                cpu.classList.remove('opacity-50', 'bg-slate-70080');
                 cpu.classList.add('ring-2', 'ring-green-400', 'bg-slate-700');
-                document.getElementById('sim-cpu-op').innerText = "LDA $2002";
-                document.getElementById('sim-cpu-op').className = "h-16 flex items-center justify-center bg-slate-900 rounded font-mono text-green-400 text-xs p-2 border border-green-500/50 shadow-[0_0_10px_rgba(74,222,128,0.2)]";
-                log(consoleDiv, "CPU: Fetch/Decode. Cycles += 3");
+                document.getElementById('sim-cpu-op').innerText = LDA $2002;
+                document.getElementById('sim-cpu-op').className = h-16 flex items-center justify-center bg-slate-900 rounded font-mono text-green-400 text-xs p-2 border border-green-50050 shadow-[0_0_10px_rgba(74,222,128,0.2)];
+                log(consoleDiv, CPU FetchDecode. Cycles += 3);
                 updateCycles(3);
             } else if (emuState === 1) {
-                // CPU
+                 CPU
                 emuState = 2;
-                cpu.classList.remove('opacity-50', 'bg-slate-700/80');
+                cpu.classList.remove('opacity-50', 'bg-slate-70080');
                 cpu.classList.add('ring-2', 'ring-green-400', 'bg-slate-700');
-                document.getElementById('sim-cpu-op').innerText = "STA $2005";
-                 document.getElementById('sim-cpu-op').className = "h-16 flex items-center justify-center bg-slate-900 rounded font-mono text-green-400 text-xs p-2 border border-green-500/50 shadow-[0_0_10px_rgba(74,222,128,0.2)]";
-                log(consoleDiv, "CPU: Write Scroll Register.");
+                document.getElementById('sim-cpu-op').innerText = STA $2005;
+                 document.getElementById('sim-cpu-op').className = h-16 flex items-center justify-center bg-slate-900 rounded font-mono text-green-400 text-xs p-2 border border-green-50050 shadow-[0_0_10px_rgba(74,222,128,0.2)];
+                log(consoleDiv, CPU Write Scroll Register.);
                 updateCycles(2);
             } else if (emuState === 2) {
-                // PPU
+                 PPU
                 emuState = 3;
-                ppu.classList.remove('opacity-50', 'bg-slate-700/80');
+                ppu.classList.remove('opacity-50', 'bg-slate-70080');
                 ppu.classList.add('ring-2', 'ring-purple-400', 'bg-slate-700');
                 
                 const bar = document.getElementById('sim-ppu-bar');
                 bar.style.width = '100%';
-                setTimeout(() => { bar.style.width = '0%'; }, 500);
+                setTimeout(() = { bar.style.width = '0%'; }, 500);
                 
                 scanlines++;
-                document.getElementById('sim-scanline').innerText = `Line: ${scanlines}/16`;
-                log(consoleDiv, `PPU: Catch-up Render. Scanline ${scanlines} done.`);
+                document.getElementById('sim-scanline').innerText = `Line ${scanlines}16`;
+                log(consoleDiv, `PPU Catch-up Render. Scanline ${scanlines} done.`);
 
-                if (scanlines >= 16) {
+                if (scanlines = 16) {
                     emuState = 4;
                 } else {
                     emuState = 0;
                 }
-            } else if (emuState === 3 || emuState === 4) {
-                // DMA
-                dma.classList.remove('opacity-50', 'bg-slate-700/80');
+            } else if (emuState === 3  emuState === 4) {
+                 DMA
+                dma.classList.remove('opacity-50', 'bg-slate-70080');
                 dma.classList.add('ring-2', 'ring-blue-400', 'bg-slate-700');
-                document.getElementById('sim-dma-status').innerText = "BUSY";
+                document.getElementById('sim-dma-status').innerText = BUSY;
                 
                 const flow = document.getElementById('sim-dma-flow');
                 flow.style.width = '100%';
-                setTimeout(() => { 
+                setTimeout(() = { 
                     flow.style.width = '0%'; 
-                    document.getElementById('sim-dma-status').innerText = "IDLE";
+                    document.getElementById('sim-dma-status').innerText = IDLE;
                 }, 800);
 
-                log(consoleDiv, "<span class='text-blue-400 font-bold'>DMA: Sending Block to LCD...</span>");
+                log(consoleDiv, span class='text-blue-400 font-bold'DMA Sending Block to LCD...span);
                 scanlines = 0;
                 emuState = 0;
             }
@@ -726,96 +726,96 @@
 
         window.emuReset = function() {
             scanlines = 0;
-            document.getElementById('sim-scanline').innerText = "Line: 0/16";
-            document.getElementById('sim-console').innerHTML = "<span class='text-green-500'>[SYSTEM]</span> Reset.<br>";
+            document.getElementById('sim-scanline').innerText = Line 016;
+            document.getElementById('sim-console').innerHTML = span class='text-green-500'[SYSTEM]span Reset.br;
             emuState = 0;
         };
 
         function log(container, msg) {
-            container.innerHTML += `> ${msg}<br>`;
+            container.innerHTML += ` ${msg}br`;
             container.scrollTop = container.scrollHeight;
         }
 
         function updateCycles(num) {
             const el = document.getElementById('sim-cpu-cycles');
-            let current = parseInt(el.innerText.split(': ')[1]);
-            el.innerText = `Cycles: ${current + num}`;
+            let current = parseInt(el.innerText.split(' ')[1]);
+            el.innerText = `Cycles ${current + num}`;
         }
 
-        // --- Navigation Logic ---
+         --- Navigation Logic ---
         window.scrollToSection = function(idx) {
             const el = document.getElementById(`section-${idx}`);
-            const offset = 120; // sticky header height
+            const offset = 120;  sticky header height
             const bodyRect = document.body.getBoundingClientRect().top;
             const elementRect = el.getBoundingClientRect().top;
             const elementPosition = elementRect - bodyRect;
             const offsetPosition = elementPosition - offset;
 
             document.getElementById('main-scroll').scrollTo({
-                top: document.getElementById('main-scroll').scrollTop + el.getBoundingClientRect().top - 120,
-                behavior: 'smooth'
+                top document.getElementById('main-scroll').scrollTop + el.getBoundingClientRect().top - 120,
+                behavior 'smooth'
             });
             
-            // Mobile close
-            if(window.innerWidth < 768) {
+             Mobile close
+            if(window.innerWidth  768) {
                 document.getElementById('sidebar').classList.add('-translate-x-full');
             }
         };
 
-        // Active Link Highlighter using IntersectionObserver
+         Active Link Highlighter using IntersectionObserver
         function setupActiveSpy() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
+            const observer = new IntersectionObserver((entries) = {
+                entries.forEach(entry = {
                     if (entry.isIntersecting) {
-                        // Get ID
+                         Get ID
                         const id = entry.target.id.split('-')[1];
-                        // Remove active class from all
-                        document.querySelectorAll('#nav-container a').forEach(a => {
+                         Remove active class from all
+                        document.querySelectorAll('#nav-container a').forEach(a = {
                             a.classList.remove('nav-active', 'border-brand-500', 'bg-slate-800', 'text-white');
                             a.classList.add('border-transparent', 'text-slate-400');
                         });
-                        // Add active to current
+                         Add active to current
                         const activeLink = document.getElementById(`nav-link-${id}`);
                         if (activeLink) {
                             activeLink.classList.remove('border-transparent', 'text-slate-400');
                             activeLink.classList.add('nav-active', 'border-brand-500');
                         }
                         
-                        // Update Header Title dynamically
+                         Update Header Title dynamically
                         const titleText = reportData[id].title;
                         document.getElementById('header-title').innerText = titleText;
                     }
                 });
             }, {
-                root: document.getElementById('main-scroll'),
-                threshold: 0.2, // Trigger when 20% visible
-                rootMargin: "-10% 0px -70% 0px" // Focus area in the middle-top
+                root document.getElementById('main-scroll'),
+                threshold 0.2,  Trigger when 20% visible
+                rootMargin -10% 0px -70% 0px  Focus area in the middle-top
             });
 
-            document.querySelectorAll('section').forEach(sec => observer.observe(sec));
+            document.querySelectorAll('section').forEach(sec = observer.observe(sec));
         }
 
-        // --- Init ---
-        document.addEventListener('DOMContentLoaded', () => {
+         --- Init ---
+        document.addEventListener('DOMContentLoaded', () = {
             renderNav();
             renderContent();
             
-            // Setup Listeners
-            document.getElementById('menu-toggle').addEventListener('click', () => {
+             Setup Listeners
+            document.getElementById('menu-toggle').addEventListener('click', () = {
                 document.getElementById('sidebar').classList.toggle('-translate-x-full');
             });
 
             const mainScroll = document.getElementById('main-scroll');
-            mainScroll.addEventListener('scroll', () => {
+            mainScroll.addEventListener('scroll', () = {
                 const total = mainScroll.scrollHeight - mainScroll.clientHeight;
-                const prog = (mainScroll.scrollTop / total) * 100;
+                const prog = (mainScroll.scrollTop  total)  100;
                 document.getElementById('read-progress').style.width = `${prog}%`;
             });
 
-            // Delay observer setup slightly to ensure content render
+             Delay observer setup slightly to ensure content render
             setTimeout(setupActiveSpy, 500);
         });
 
-    </script>
-</body>
-</html>
+    script
+body
+html
